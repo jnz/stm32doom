@@ -1,3 +1,4 @@
+Q ?= @
 TARGET   = stm32doom
 LDSCRIPT = memory.ld
 SRCDIR   = src
@@ -47,27 +48,27 @@ lss: $(BINDIR)/$(TARGET).lss
 
 $(BINDIR)/$(TARGET).elf: $(OBJ)
 	@echo "linking $@ ..."
-	$(CC) -o $@ $(OBJ) $(LDFLAGS)
+	$(Q)$(CC) -o $@ $(OBJ) $(LDFLAGS)
 
 $(BINDIR)/$(TARGET).hex: $(BINDIR)/$(TARGET).elf
 	@echo "generating $@ ..."
-	$(BIN) -O ihex $< $@
+	$(Q)$(BIN) -O ihex $< $@
 	
 $(BINDIR)/$(TARGET).bin: $(BINDIR)/$(TARGET).elf
 	@echo "generating $@ ..."
-	$(BIN) -O binary $< $@
+	$(Q)$(BIN) -O binary $< $@
 	
 $(BINDIR)/$(TARGET).lss: $(BINDIR)/$(TARGET).elf
 	@echo "generating $@ ..."
-	$(OBJDUMP) -h -S $< > $@
+	$(Q)$(OBJDUMP) -h -S $< > $@
 
 $(BINDIR)/%.o: $(SRCDIR)/%.c
 	@echo "compiling $< ..."
-	$(CC) $(CFLAGS) $< -o $@
+	$(Q)$(CC) $(CFLAGS) $< -o $@
 
 $(BINDIR)/%.o: $(LIBDIR)/%.c
 	@echo "compiling $< ..."
-	$(CC) $(CFLAGS) $< -o $@
+	$(Q)$(CC) $(CFLAGS) $< -o $@
 
 	
 phony: flash clean size
@@ -81,4 +82,4 @@ clean:
 	@rm -r $(BINDIR)/*
 
 size: elf
-	$(SIZE) --format=sysv -d $(BINDIR)/$(TARGET).elf
+	$(Q)$(SIZE) --format=sysv -d $(BINDIR)/$(TARGET).elf
