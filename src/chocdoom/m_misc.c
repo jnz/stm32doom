@@ -71,7 +71,7 @@ void M_MakeDirectory(char *path)
 
     path_mod = (char*)malloc (len + 1);
 
-    strncpy (path_mod, path, len);
+    strcpy (path_mod, path);
 
     if (path_mod[len - 1] == '/')
     {
