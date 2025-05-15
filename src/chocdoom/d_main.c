@@ -75,6 +75,11 @@
 
 #include "d_main.h"
 
+// from debug.c
+extern void iwdg_feed (void); // keep the watchdog happy
+// from main.c:
+extern uint32_t GetTickCount (void); // return runtime in milliseconds
+
 //
 // D-DoomLoop()
 // Not a globally visible function,
@@ -442,6 +447,15 @@ void D_DoomLoop (void)
 
     while (1)
     {
+#ifdef DESKTOP_ORNAMENT_MODE
+#warning "Desktop Ornament Mode will reset the board every 1h"
+		if (GetTickCount() > 1000*3600)
+		{
+			while(1) { } // die
+		}
+#endif
+		iwdg_feed();
+
 		// frame syncronous IO operations
 		I_StartFrame ();
 

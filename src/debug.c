@@ -41,6 +41,26 @@ uint8_t debug_char;
  *  private functions                                                  *
  *---------------------------------------------------------------------*/
 
+static void iwdg_init (void)
+{
+	// Enable write access to IWDG_PR and IWDG_RLR with magic number:
+	IWDG->KR = 0x5555;
+	// Set prescaler to max (divide by 256)
+	IWDG->PR = IWDG_PR_PR_2 | IWDG_PR_PR_1 | IWDG_PR_PR_0; // 0b111 = /256
+	// Set reload to max
+	// IWDG->RLR = 0x0FFF; // 4095 = 32 seconds
+	IWDG->RLR = 1800;
+	// Reload counter
+	IWDG->KR = 0xAAAA;
+	// Start the watchdog
+	IWDG->KR = 0xCCCC;
+}
+
+void iwdg_feed (void)
+{
+	IWDG->KR = 0xAAAA;
+}
+
 /*---------------------------------------------------------------------*
  *  public functions                                                   *
  *---------------------------------------------------------------------*/
@@ -98,6 +118,9 @@ void debug_init (void)
 	USART_ITConfig (USART1, USART_IT_RXNE, ENABLE);
 
 	USART_Cmd (USART1, ENABLE);
+
+    /* IWDG is used to reset stm32doom on the discovery board */
+	iwdg_init();
 }
 
 void debug_chr (char chr)

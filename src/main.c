@@ -192,6 +192,11 @@ void SysTick_Handler (void)
 	systime++;
 }
 
+uint32_t GetTickCount (void)
+{
+	return systime;
+}
+
 /*
  * Show fatal error message and stop in endless loop
  */

@@ -8,6 +8,15 @@ DOOMDIR  = chocdoom
 
 SRC_MAIN = button.c debug.c font.c gfx.c i2c.c images.c jpeg.c lcd.c led.c main.c sdram.c spi.c syscalls.c touch.c vectors.c
 
+# Reset the STM32 every hour in "desktop ornament mode"
+# Build with
+# 	make DESKTOP_ORNAMENT=1
+DESKTOP_ORNAMENT ?= 0
+
+ifeq ($(DESKTOP_ORNAMENT),1)
+  CFLAGS += -DDESKTOP_ORNAMENT_MODE
+endif
+
 SRC_DOOM = dummy.c am_map.c doomdef.c doomstat.c dstrings.c d_event.c d_items.c d_iwad.c d_loop.c d_main.c d_mode.c d_net.c f_finale.c f_wipe.c g_game.c hu_lib.c hu_stuff.c info.c i_cdmus.c i_endoom.c i_joystick.c i_main.c i_scale.c i_sound.c i_system.c i_timer.c i_video.c memio.c m_argv.c m_bbox.c m_cheat.c m_config.c m_controls.c m_fixed.c m_menu.c m_misc.c m_random.c p_ceilng.c p_doors.c p_enemy.c p_floor.c p_inter.c p_lights.c p_map.c p_maputl.c p_mobj.c p_plats.c p_pspr.c p_saveg.c p_setup.c p_sight.c p_spec.c p_switch.c p_telept.c p_tick.c p_user.c r_bsp.c r_data.c r_draw.c r_main.c r_plane.c r_segs.c r_sky.c r_things.c sha1.c sounds.c statdump.c st_lib.c st_stuff.c s_sound.c tables.c v_video.c wi_stuff.c w_checksum.c w_file.c w_file_stdc.c w_main.c w_wad.c z_zone.c
 
 LIB_ST   = misc.c stm32f4xx_dma.c stm32f4xx_dma2d.c stm32f4xx_exti.c stm32f4xx_fmc.c stm32f4xx_gpio.c stm32f4xx_i2c.c stm32f4xx_ltdc.c stm32f4xx_rcc.c stm32f4xx_sdio.c stm32f4xx_spi.c stm32f4xx_syscfg.c stm32f4xx_tim.c stm32f4xx_usart.c system_stm32f4xx.c
@@ -26,7 +35,7 @@ CC       = $(TOOLCHAIN)arm-none-eabi-gcc
 BIN      = $(TOOLCHAIN)arm-none-eabi-objcopy
 OBJDUMP  = $(TOOLCHAIN)arm-none-eabi-objdump
 SIZE     = $(TOOLCHAIN)arm-none-eabi-size
-CFLAGS   = -mthumb -mtune=cortex-m4 -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mlittle-endian -fcommon -Wall $(DEFINES) -g -I $(SRCDIR) -I $(SRCDIR)/$(DOOMDIR) -I $(LIBDIR)/stm32 -I $(LIBDIR)/usb -I $(LIBDIR)/fatfs -O2 -c
+CFLAGS   += -mthumb -mtune=cortex-m4 -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mlittle-endian -fcommon -Wall $(DEFINES) -g -I $(SRCDIR) -I $(SRCDIR)/$(DOOMDIR) -I $(LIBDIR)/stm32 -I $(LIBDIR)/usb -I $(LIBDIR)/fatfs -O2 -c
 CFLAGS   += -Wno-unused-const-variable -Wno-format-truncation
 LDFLAGS  = -mthumb -mtune=cortex-m4 -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mlittle-endian -lm -nostartfiles -T$(LDSCRIPT) -Wl,-Map=$(BINDIR)/$(TARGET).map
 
