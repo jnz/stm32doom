@@ -1,4 +1,8 @@
-bin/
+bin/*.o
+bin/chocdoom/*.o
+bin/fatfs/*.o
+bin/stm32/*.o
+bin/usb/*.o
 *.project
 *.cproject
 *.settings

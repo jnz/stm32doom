@@ -33,13 +33,6 @@ LDFLAGS  = -mthumb -mtune=cortex-m4 -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-
 OBJS     = $(addprefix $(SRCDIR)/, $(SRC:.c=.o)) $(addprefix $(LIBDIR)/, $(LIB:.c=.o))
 OBJ      = $(subst $(LIBDIR)/,$(BINDIR)/,$(subst $(SRCDIR)/,$(BINDIR)/,$(OBJS)))
 
-
-DUMMY:=$(shell if ! [ -d $(BINDIR) ]; then mkdir $(BINDIR); fi)
-DUMMY:=$(shell if ! [ -d $(BINDIR)/$(DOOMDIR) ]; then mkdir $(BINDIR)/$(DOOMDIR); fi)
-DUMMY:=$(shell if ! [ -d $(BINDIR)/stm32 ]; then mkdir $(BINDIR)/stm32; fi)
-DUMMY:=$(shell if ! [ -d $(BINDIR)/usb ]; then mkdir $(BINDIR)/usb; fi)
-DUMMY:=$(shell if ! [ -d $(BINDIR)/fatfs ]; then mkdir $(BINDIR)/fatfs; fi)
-
 all: elf hex bin lss size
 
 elf: $(BINDIR)/$(TARGET).elf
@@ -76,11 +69,21 @@ phony: flash clean size
 
 flash: all
 	@echo "flashing ..."
-	$(shell) st-link_cli -c SWD -P '$(BINDIR)/$(TARGET).bin' 0x08000000 -Rst
+	# $(shell) st-link_cli -c SWD -P '$(BINDIR)/$(TARGET).bin' 0x08000000 -Rst
+	STM32_Programmer_CLI -c port=SWD mode=UR -d $(BINDIR)/$(TARGET).bin 0x08000000 -rst
 	
 clean:
 	@echo "cleaning up ..."
-	@rm -r $(BINDIR)/*
+	@rm -f $(BINDIR)/*.o
+	@rm -f $(BINDIR)/chocdoom/*.o
+	@rm -f $(BINDIR)/fatfs/*.o
+	@rm -f $(BINDIR)/stm32/*.o
+	@rm -f $(BINDIR)/usb/*.o
+	@rm -f $(BINDIR)/$(TARGET).elf
+	@rm -f $(BINDIR)/$(TARGET).hex
+	@rm -f $(BINDIR)/$(TARGET).bin
+	@rm -f $(BINDIR)/$(TARGET).lss
+	@rm -f $(BINDIR)/$(TARGET).map
 
 size: elf
 	$(Q)$(SIZE) --format=sysv -d $(BINDIR)/$(TARGET).elf
